@@ -22,21 +22,26 @@ namespace InstrumentHealthCheck
             this.deviceConnectionPanel1 = new InstrumentHealthCheck.UI.DeviceConnectionPanel();
             this.tabPortSwitch = new System.Windows.Forms.TabPage();
             this.portSwitchPanel1 = new InstrumentHealthCheck.UI.PortSwitchPanel();
+            this.tabCalibration = new System.Windows.Forms.TabPage();
+            this.calibrationPanel1 = new InstrumentHealthCheck.UI.CalibrationPanel();
             this.tabMain.SuspendLayout();
             this.tabDevices.SuspendLayout();
             this.tabPortSwitch.SuspendLayout();
+            this.tabCalibration.SuspendLayout();
             this.SuspendLayout();
             //
             // tabMain
             //
             this.tabMain.Controls.Add(this.tabDevices);
             this.tabMain.Controls.Add(this.tabPortSwitch);
+            this.tabMain.Controls.Add(this.tabCalibration);
             this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabMain.Location = new System.Drawing.Point(0, 0);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
             this.tabMain.Size = new System.Drawing.Size(760, 540);
             this.tabMain.TabIndex = 0;
+            this.tabMain.SelectedIndexChanged += new System.EventHandler(this.tabMain_SelectedIndexChanged);
             //
             // tabDevices
             //
@@ -76,6 +81,25 @@ namespace InstrumentHealthCheck
             this.portSwitchPanel1.Size = new System.Drawing.Size(746, 506);
             this.portSwitchPanel1.TabIndex = 0;
             //
+            // tabCalibration
+            //
+            this.tabCalibration.Controls.Add(this.calibrationPanel1);
+            this.tabCalibration.Location = new System.Drawing.Point(4, 24);
+            this.tabCalibration.Name = "tabCalibration";
+            this.tabCalibration.Padding = new System.Windows.Forms.Padding(3);
+            this.tabCalibration.Size = new System.Drawing.Size(752, 512);
+            this.tabCalibration.TabIndex = 2;
+            this.tabCalibration.Text = "LOSS 校正";
+            this.tabCalibration.UseVisualStyleBackColor = true;
+            //
+            // calibrationPanel1
+            //
+            this.calibrationPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.calibrationPanel1.Location = new System.Drawing.Point(3, 3);
+            this.calibrationPanel1.Name = "calibrationPanel1";
+            this.calibrationPanel1.Size = new System.Drawing.Size(746, 506);
+            this.calibrationPanel1.TabIndex = 0;
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -88,6 +112,7 @@ namespace InstrumentHealthCheck
             this.tabMain.ResumeLayout(false);
             this.tabDevices.ResumeLayout(false);
             this.tabPortSwitch.ResumeLayout(false);
+            this.tabCalibration.ResumeLayout(false);
             this.ResumeLayout(false);
         }
 
@@ -98,5 +123,7 @@ namespace InstrumentHealthCheck
         private InstrumentHealthCheck.UI.DeviceConnectionPanel deviceConnectionPanel1;
         private System.Windows.Forms.TabPage tabPortSwitch;
         private InstrumentHealthCheck.UI.PortSwitchPanel portSwitchPanel1;
+        private System.Windows.Forms.TabPage tabCalibration;
+        private InstrumentHealthCheck.UI.CalibrationPanel calibrationPanel1;
     }
 }
