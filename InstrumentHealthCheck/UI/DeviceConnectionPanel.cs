@@ -62,9 +62,10 @@ namespace InstrumentHealthCheck.UI
             lblDutStatus.ForeColor = Color.Gray;
             btnConnectDut.Enabled = false;
 
-            bool connected = dut.ConnectLan(ip) && dut.GetIDN();
+            bool lanOk = dut.ConnectLan(ip);
+            bool idnOk = lanOk && dut.GetIDN();
 
-            if (connected)
+            if (idnOk)
             {
                 _dut = dut;
                 lblDutStatus.Text = string.Format("已連線：{0} {1} (SN {2})", dut.Vendor, dut.Model, dut.SN);
@@ -73,7 +74,9 @@ namespace InstrumentHealthCheck.UI
             else
             {
                 _dut = null;
-                lblDutStatus.Text = "連線失敗";
+                lblDutStatus.Text = !lanOk
+                    ? "連線失敗（TCP/VISA 無法建立連線 - 請確認 IP、儀器電源、網路，以及儀器的 LAN/VXI-11 遠端介面是否已開啟）"
+                    : "已建立連線，但讀取 *IDN? 失敗（請確認儀器 SCPI 遠端控制已啟用）";
                 lblDutStatus.ForeColor = Color.Red;
             }
 
@@ -93,32 +96,36 @@ namespace InstrumentHealthCheck.UI
             lblRefStatus.ForeColor = Color.Gray;
             btnConnectRef.Enabled = false;
 
-            bool connected;
+            bool lanOk, idnOk;
             string vendor = null, model = null, sn = null;
 
             if (CurrentRole == DutRoleType.SignalAnalyzer)
             {
                 var sg = new SignalGenerator();
-                connected = sg.ConnectLan(ip) && sg.GetIDN();
-                if (connected) { _refSg = sg; vendor = sg.Vendor; model = sg.Model; sn = sg.SN; }
+                lanOk = sg.ConnectLan(ip);
+                idnOk = lanOk && sg.GetIDN();
+                if (idnOk) { _refSg = sg; vendor = sg.Vendor; model = sg.Model; sn = sg.SN; }
                 else { _refSg = null; }
             }
             else
             {
                 var sa = new SpectrumAnalyzer();
-                connected = sa.ConnectLan(ip) && sa.GetIDN();
-                if (connected) { _refSa = sa; vendor = sa.Vendor; model = sa.Model; sn = sa.SN; }
+                lanOk = sa.ConnectLan(ip);
+                idnOk = lanOk && sa.GetIDN();
+                if (idnOk) { _refSa = sa; vendor = sa.Vendor; model = sa.Model; sn = sa.SN; }
                 else { _refSa = null; }
             }
 
-            if (connected)
+            if (idnOk)
             {
                 lblRefStatus.Text = string.Format("已連線：{0} {1} (SN {2})", vendor, model, sn);
                 lblRefStatus.ForeColor = Color.DarkGreen;
             }
             else
             {
-                lblRefStatus.Text = "連線失敗";
+                lblRefStatus.Text = !lanOk
+                    ? "連線失敗（TCP/VISA 無法建立連線 - 請確認 IP、儀器電源、網路，以及儀器的 LAN/VXI-11 遠端介面是否已開啟）"
+                    : "已建立連線，但讀取 *IDN? 失敗（請確認儀器 SCPI 遠端控制已啟用）";
                 lblRefStatus.ForeColor = Color.Red;
             }
 
