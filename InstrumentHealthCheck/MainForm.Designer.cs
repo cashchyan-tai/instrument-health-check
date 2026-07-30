@@ -18,14 +18,18 @@ namespace InstrumentHealthCheck
         private void InitializeComponent()
         {
             this.tabMain = new System.Windows.Forms.TabControl();
+            this.tabDevices = new System.Windows.Forms.TabPage();
+            this.deviceConnectionPanel1 = new InstrumentHealthCheck.UI.DeviceConnectionPanel();
             this.tabPortSwitch = new System.Windows.Forms.TabPage();
             this.portSwitchPanel1 = new InstrumentHealthCheck.UI.PortSwitchPanel();
             this.tabMain.SuspendLayout();
+            this.tabDevices.SuspendLayout();
             this.tabPortSwitch.SuspendLayout();
             this.SuspendLayout();
             //
             // tabMain
             //
+            this.tabMain.Controls.Add(this.tabDevices);
             this.tabMain.Controls.Add(this.tabPortSwitch);
             this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabMain.Location = new System.Drawing.Point(0, 0);
@@ -33,6 +37,25 @@ namespace InstrumentHealthCheck
             this.tabMain.SelectedIndex = 0;
             this.tabMain.Size = new System.Drawing.Size(760, 540);
             this.tabMain.TabIndex = 0;
+            //
+            // tabDevices
+            //
+            this.tabDevices.Controls.Add(this.deviceConnectionPanel1);
+            this.tabDevices.Location = new System.Drawing.Point(4, 24);
+            this.tabDevices.Name = "tabDevices";
+            this.tabDevices.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDevices.Size = new System.Drawing.Size(752, 512);
+            this.tabDevices.TabIndex = 1;
+            this.tabDevices.Text = "設備連線";
+            this.tabDevices.UseVisualStyleBackColor = true;
+            //
+            // deviceConnectionPanel1
+            //
+            this.deviceConnectionPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deviceConnectionPanel1.Location = new System.Drawing.Point(3, 3);
+            this.deviceConnectionPanel1.Name = "deviceConnectionPanel1";
+            this.deviceConnectionPanel1.Size = new System.Drawing.Size(746, 506);
+            this.deviceConnectionPanel1.TabIndex = 0;
             //
             // tabPortSwitch
             //
@@ -63,6 +86,7 @@ namespace InstrumentHealthCheck
             this.Name = "MainForm";
             this.Text = "Instrument Health Check";
             this.tabMain.ResumeLayout(false);
+            this.tabDevices.ResumeLayout(false);
             this.tabPortSwitch.ResumeLayout(false);
             this.ResumeLayout(false);
         }
@@ -70,6 +94,8 @@ namespace InstrumentHealthCheck
         #endregion
 
         private System.Windows.Forms.TabControl tabMain;
+        private System.Windows.Forms.TabPage tabDevices;
+        private InstrumentHealthCheck.UI.DeviceConnectionPanel deviceConnectionPanel1;
         private System.Windows.Forms.TabPage tabPortSwitch;
         private InstrumentHealthCheck.UI.PortSwitchPanel portSwitchPanel1;
     }
