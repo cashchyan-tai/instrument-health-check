@@ -25,7 +25,9 @@ namespace Pegatron
         public new bool ConnectLan(string sIpAddress, int nTimeOut = 2500)
         {
             IPAddress = sIpAddress;
-            m_sConnectionString = "TCPIP::" + sIpAddress + "::INST0::INSTR";
+            // Allow callers to pass a full VISA resource string (e.g. "TCPIP0::<ip>::hislip0::INSTR")
+            // to work around instruments/VISA stacks that don't like the default "TCPIP::<ip>::INST0::INSTR" form.
+            m_sConnectionString = sIpAddress.Contains("::") ? sIpAddress : "TCPIP::" + sIpAddress + "::INST0::INSTR";
             SetVisaType(EVisaType.LAN);
             return base.ConnectDevice(m_sConnectionString, nTimeOut);
         }
