@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pegatron", "Pegatron\Pegatron.csproj", "{034BAB2A-4EB2-4C75-9619-0CD35ECFF6EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstrumentCore", "InstrumentCore\InstrumentCore.csproj", "{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{034BAB2A-4EB2-4C75-9619-0CD35ECFF6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{034BAB2A-4EB2-4C75-9619-0CD35ECFF6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{034BAB2A-4EB2-4C75-9619-0CD35ECFF6EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

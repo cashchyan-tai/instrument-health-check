@@ -117,18 +117,7 @@
       <DependentUpon>SpecPopupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="VISA\DUT.cs" />
-    <Compile Include="VISA\IDUTInstrument.cs" />
-    <Compile Include="VISA\ISwitchBox.cs" />
     <Compile Include="VISA\LitePointDUT.cs" />
-    <Compile Include="VISA\RSAnalyzerDUT.cs" />
-    <Compile Include="VISA\RSGeneratorDUT.cs" />
-    <Compile Include="VISA\Switch.cs" />
-    <Compile Include="VISA\SwitchRapidtek.cs" />
-    <Compile Include="VISA\PowerSensor.cs" />
-    <Compile Include="VISA\SignalGenerator.cs" />
-    <Compile Include="VISA\SpectrumAnalyzer.cs" />
-    <Compile Include="VISA\VIsa.cs" />
-    <Compile Include="VISA\VisaEquipment.cs" />
     <EmbeddedResource Include="CalibrationForm.resx">
       <DependentUpon>CalibrationForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -166,6 +155,12 @@
     <EmbeddedResource Include="Specifications_IQXEL_M8W.csv" />
     <EmbeddedResource Include="Specifications_RS_FSW.csv" />
     <EmbeddedResource Include="Specifications_RS_Generator.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InstrumentCore\InstrumentCore.csproj">
+      <Project>{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}</Project>
+      <Name>InstrumentCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
