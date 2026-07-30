@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pegatron", "Pegatron\Pegatr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstrumentCore", "InstrumentCore\InstrumentCore.csproj", "{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstrumentHealthCheck", "InstrumentHealthCheck\InstrumentHealthCheck.csproj", "{4C789729-A022-4BB2-B0B5-697ED0FDDB84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C789729-A022-4BB2-B0B5-697ED0FDDB84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C789729-A022-4BB2-B0B5-697ED0FDDB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C789729-A022-4BB2-B0B5-697ED0FDDB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C789729-A022-4BB2-B0B5-697ED0FDDB84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
