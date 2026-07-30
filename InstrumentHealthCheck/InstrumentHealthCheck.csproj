@@ -53,8 +53,20 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Config\PortDefinition.cs" />
+    <Compile Include="Config\SwitchVendorType.cs" />
+    <Compile Include="Config\PortSwitchSettings.cs" />
+    <Compile Include="UI\PortSwitchPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\PortSwitchPanel.Designer.cs">
+      <DependentUpon>PortSwitchPanel.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\PortSwitchPanel.resx">
+      <DependentUpon>PortSwitchPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
