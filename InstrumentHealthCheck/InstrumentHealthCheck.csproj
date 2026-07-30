@@ -79,6 +79,14 @@
     <Compile Include="UI\CalibrationPanel.Designer.cs">
       <DependentUpon>CalibrationPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\TestPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\TestPanel.Designer.cs">
+      <DependentUpon>TestPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Results\TestResultRow.cs" />
+    <Compile Include="Reports\ReportBuilder.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -91,6 +99,9 @@
     <EmbeddedResource Include="UI\CalibrationPanel.resx">
       <DependentUpon>CalibrationPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\TestPanel.resx">
+      <DependentUpon>TestPanel.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -100,6 +111,11 @@
       <Project>{B6AD0F3D-C079-424E-B98C-C01FC5E069C6}</Project>
       <Name>InstrumentCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NReco.PdfGenerator">
+      <Version>1.2.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -21,6 +21,32 @@ namespace InstrumentHealthCheck.UI
             SetupGrid();
         }
 
+        // Routes to the physical port when a switch is in use, or just prompts the operator
+        // to move the cable by hand when it isn't - the caller (test runner) doesn't need to
+        // know which case applies.
+        public bool ActivatePort(PortDefinition port)
+        {
+            if (!chkUseSwitch.Checked)
+            {
+                MessageBox.Show(
+                    string.Format("請確認纜線已手動接至「{0}」，完成後按確定繼續。", port.Name),
+                    "手動切換路徑", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return true;
+            }
+
+            if (_switchBox == null)
+            {
+                MessageBox.Show("Switch 尚未連線，請先在上方連線測試。", "無法切換 Port", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            bool ok = _switchBox.SetPort(port.PhysicalPortNumber);
+            if (!ok)
+                MessageBox.Show(string.Format("切換到 Port {0} 失敗。", port.PhysicalPortNumber), "Switch 錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            return ok;
+        }
+
         public PortSwitchSettings GetSettings()
         {
             return new PortSwitchSettings

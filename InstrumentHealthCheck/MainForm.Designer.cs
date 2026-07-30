@@ -24,10 +24,13 @@ namespace InstrumentHealthCheck
             this.portSwitchPanel1 = new InstrumentHealthCheck.UI.PortSwitchPanel();
             this.tabCalibration = new System.Windows.Forms.TabPage();
             this.calibrationPanel1 = new InstrumentHealthCheck.UI.CalibrationPanel();
+            this.tabTest = new System.Windows.Forms.TabPage();
+            this.testPanel1 = new InstrumentHealthCheck.UI.TestPanel();
             this.tabMain.SuspendLayout();
             this.tabDevices.SuspendLayout();
             this.tabPortSwitch.SuspendLayout();
             this.tabCalibration.SuspendLayout();
+            this.tabTest.SuspendLayout();
             this.SuspendLayout();
             //
             // tabMain
@@ -35,6 +38,7 @@ namespace InstrumentHealthCheck
             this.tabMain.Controls.Add(this.tabDevices);
             this.tabMain.Controls.Add(this.tabPortSwitch);
             this.tabMain.Controls.Add(this.tabCalibration);
+            this.tabMain.Controls.Add(this.tabTest);
             this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabMain.Location = new System.Drawing.Point(0, 0);
             this.tabMain.Name = "tabMain";
@@ -100,6 +104,25 @@ namespace InstrumentHealthCheck
             this.calibrationPanel1.Size = new System.Drawing.Size(746, 506);
             this.calibrationPanel1.TabIndex = 0;
             //
+            // tabTest
+            //
+            this.tabTest.Controls.Add(this.testPanel1);
+            this.tabTest.Location = new System.Drawing.Point(4, 24);
+            this.tabTest.Name = "tabTest";
+            this.tabTest.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTest.Size = new System.Drawing.Size(752, 512);
+            this.tabTest.TabIndex = 3;
+            this.tabTest.Text = "測試";
+            this.tabTest.UseVisualStyleBackColor = true;
+            //
+            // testPanel1
+            //
+            this.testPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.testPanel1.Location = new System.Drawing.Point(3, 3);
+            this.testPanel1.Name = "testPanel1";
+            this.testPanel1.Size = new System.Drawing.Size(746, 506);
+            this.testPanel1.TabIndex = 0;
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -113,6 +136,7 @@ namespace InstrumentHealthCheck
             this.tabDevices.ResumeLayout(false);
             this.tabPortSwitch.ResumeLayout(false);
             this.tabCalibration.ResumeLayout(false);
+            this.tabTest.ResumeLayout(false);
             this.ResumeLayout(false);
         }
 
@@ -125,5 +149,7 @@ namespace InstrumentHealthCheck
         private InstrumentHealthCheck.UI.PortSwitchPanel portSwitchPanel1;
         private System.Windows.Forms.TabPage tabCalibration;
         private InstrumentHealthCheck.UI.CalibrationPanel calibrationPanel1;
+        private System.Windows.Forms.TabPage tabTest;
+        private InstrumentHealthCheck.UI.TestPanel testPanel1;
     }
 }
