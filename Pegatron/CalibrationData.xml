@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CAL>
+	<SGDUT HAS_REF="FALSE" REF_DATE="" >
+		<DATA FREQ="0" Port1A="" Port1B="" Port2A="" Port2B="" Port3A="" Port3B="" Port4A="" Port4B="" />
+	</SGDUT>
+	<SADUT HAS_REF="FALSE" REF_DATE="" >
+		<DATA FREQ="0" Port1A="" Port1B="" Port2A="" Port2B="" Port3A="" Port3B="" Port4A="" Port4B="" />
+	</SADUT>
+</CAL>
