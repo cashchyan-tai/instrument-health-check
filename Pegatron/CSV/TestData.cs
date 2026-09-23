@@ -63,6 +63,16 @@ namespace Pegatron
         public TestValues VSAPowerAccuracy;
         public TestValues FrequencyAccuracy;
 
+        // 2nd Harmonic (SG-type DUTs only). Unlike the sections above it is located by its title
+        // row rather than a fixed row number, so spec files without it (LitePoint, SA) parse
+        // exactly as before and the SG templates can keep their trailing NOTE rows.
+        // LowFreqLimit holds the max allowed level in dBc (e.g. -30 = 2f must be >= 30 dB below f).
+        public TestValues SecondHarmonic;
+        public bool HasSecondHarmonic;
+        // Upper frequency of the reference SA; fundamentals above half of this can't be measured.
+        public double harmonicSaMaxFreqMHz = 30000;
+        const string SecondHarmonicTitle = "4. 2nd Harmonic";
+
         // VISA resource to hand to ConnectLan(): a raw socket on dutPort when one is given
         // (LitePoint IQxel/IQxstream don't speak VXI-11), otherwise the bare IP so each DUT
         // class falls back to its own default resource string (e.g. R&S's VXI-11/HiSLIP).
@@ -143,6 +153,9 @@ namespace Pegatron
             VSGLowPowerAccuracy = new TestValues();
             FrequencyAccuracy = new TestValues();
             VSAPowerAccuracy = new TestValues();
+            SecondHarmonic = new TestValues();
+            HasSecondHarmonic = false;
+            harmonicSaMaxFreqMHz = 30000;
 
             errMsg = "";
             try
@@ -432,6 +445,8 @@ namespace Pegatron
 
                     if (errMsg != "") throw new Exception(errMsg);
                 }
+
+                ParseSecondHarmonic(fileArray);
             }
             catch (Exception ex)
             {
@@ -442,5 +457,44 @@ namespace Pegatron
             return true;
         }
 
+        // Layout after the title row (same order as the other sections):
+        //   +1..+8  port enable (RF1A, RF1B, ... RF4B)
+        //   +9      Power(dBm)
+        //   +10     Frequency(MHz)
+        //   +11     Acceptance Limit (dBc max)
+        //   +12     SA Max Frequency (MHz)   - optional, defaults to 30000
+        void ParseSecondHarmonic(List<string> fileArray)
+        {
+            int title = fileArray.FindIndex(l => l.TrimStart().StartsWith(SecondHarmonicTitle, StringComparison.OrdinalIgnoreCase));
+            if (title < 0)
+                return;
+
+            if (title + 11 >= fileArray.Count)
+                throw new Exception($"\"{SecondHarmonicTitle}\" section is incomplete");
+
+            string[] Row(int offset) => fileArray[title + offset].Split(',');
+
+            for (int k = 0; k < 8; k++)
+            {
+                string[] curLine = Row(1 + k);
+                SecondHarmonic.rfChannelIsOn[k / 2, k % 2] = curLine.Length > 1 && curLine[1].Trim() == "1";
+            }
+
+            foreach (string v in Row(9).Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)))
+                SecondHarmonic.Power_Str.Add(v.Trim());
+            foreach (string v in Row(10).Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)))
+                SecondHarmonic.Frequency_Str.Add(v.Trim());
+
+            SecondHarmonic.LowFreqLimit = double.Parse(Row(11)[1]);
+
+            if (title + 12 < fileArray.Count)
+            {
+                string[] saMax = Row(12);
+                if (saMax.Length > 1 && double.TryParse(saMax[1], out double maxFreq) && maxFreq > 0)
+                    harmonicSaMaxFreqMHz = maxFreq;
+            }
+
+            HasSecondHarmonic = true;
+        }
     }
 }

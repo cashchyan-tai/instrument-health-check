@@ -287,6 +287,27 @@ namespace Pegatron
             return allCSVFreq;
         }
 
+        // Highest frequency that actually has a loss value for this port, or null if the port was
+        // never calibrated. getPowerLoss() silently clamps to the last point beyond this, so callers
+        // that measure above the fundamental (e.g. 2nd harmonic) must check against it first.
+        public int? getMaxCalFreq(int numPort, int alphaPort, string tableType)
+        {
+            List<string[]> DATA;
+            if (tableType == "SGDUT")
+                DATA = CalibrateSGtoDUT;
+            else if (tableType == "SADUT")
+                DATA = CalibrateSAtoDUT;
+            else
+                return null;
+
+            int colNum = numPort * 2 + alphaPort + 1;
+            var freqs = DATA.Where(row => row.Length > colNum && !string.IsNullOrEmpty(row[colNum]))
+                            .Select(row => int.TryParse(row[0], out int f) ? f : (int?)null)
+                            .Where(f => f.HasValue)
+                            .ToList();
+            return freqs.Count == 0 ? null : freqs.Max();
+        }
+
         public double getPowerLoss(int freq, int numPort, int alphaPort, string tableType)
         {
             List<string[]> DATA = new List<string[]>();

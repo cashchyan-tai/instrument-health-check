@@ -1529,6 +1529,10 @@ namespace Pegatron
                         }
                     }
 
+                    ///2nd Harmonic (SG-type DUT only; no-op when the spec has no such section)
+                    if (!RunSecondHarmonic())
+                        goto EndLoop;
+
                 EndLoop:
                     if (SGConnected)
                         SG.WriteScpi("OUTP OFF");
@@ -1755,6 +1759,179 @@ namespace Pegatron
             if (DUTCommTester is RSGeneratorDUT)
                 return portIndex == 0 ? csvSpec.vsgPathA : csvSpec.vsgPathB;
             return defaultRoutNum;
+        }
+
+        private const string SecondHarmonicTestName = "2nd Harmonic";
+
+        // The fundamental and 2f are read with the same fixed SA input attenuation - letting it
+        // follow the ref level would change the SA's own mixer harmonics between the two reads.
+        // 20 dB keeps the SA-generated 2nd harmonic far below a -30 dBc limit at normal SG levels.
+        private const int HarmonicSaAttenuationDb = 20;
+
+        // DUT (SG-type) transmits f; SA reads the level at f and at 2f, both loss-corrected with
+        // the SA-DUT table, and 2nd harmonic (dBc) = P(2f) - P(f). Points whose 2f is beyond the
+        // SA or the calibrated range are reported as N/A, not Fail.
+        // Returns false only when the run must abort (switch failure).
+        private bool RunSecondHarmonic()
+        {
+            bool selected = false;
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 4; j++)
+                    if (csvSpec.SecondHarmonic.rfChannelIsOn[j, i])
+                        selected = true;
+            if (!csvSpec.HasSecondHarmonic || !selected)
+                return true;
+
+            if (!DUTCommTester.CanTransmit)
+            {
+                MessageBox.Show($"DUT ({DUTCommTester.Name}) 不支援 VSG 發射模式，跳過 2nd Harmonic 測試。", "2nd Harmonic 跳過", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return true;
+            }
+
+            if (!(DUTConnected && SAConnected && SwitchConnected))
+            {
+                MessageBox.Show("Please make sure DUT, Spectrum Analyzer and SwitchBox is connected", "2nd Harmonic Test Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return true;
+            }
+
+            switchPortSet = isDebug || SwitchBox.SetPort(SwitchBox.PortSADUT);
+            if (!switchPortSet)
+            {
+                MessageBox.Show("An error occured when changing the Switch Box port", "Changing port failed");
+                return false;
+            }
+
+            // Harmonic rows are always populated last; locate them directly so a skipped earlier
+            // section (e.g. VSA on a transmit-only DUT) can't shift where these results land.
+            int rowCount = -1;
+            Invoke((MethodInvoker)(() =>
+            {
+                for (int r = 0; r < dtTestResult.Rows.Count; r++)
+                    if (dtTestResult.Rows[r][0].ToString() == SecondHarmonicTestName) { rowCount = r; break; }
+            }));
+            if (rowCount < 0)
+                return true;
+
+            SA.Reset();
+            SA.WriteScpi("INIT:CONT OFF");                  //Single Sweep Mode
+            SA.WriteScpi("CALC:MARK:STAT ON");              //Set Marker
+            SA.WriteScpi("FREQ:SPAN 100 kHz");              //Set Span
+            SA.WriteScpi("BAND:RES 1 kHz");                 //Set RBW
+            SA.WriteScpi($"INP:ATT {HarmonicSaAttenuationDb} dB");  //Fixed (manual) attenuation for both f and 2f
+            Thread.Sleep(Settings.Default.delayInitialize);
+
+            bool useCal = lblCalFileName.Text != "-";
+            double maxFundamentalMHz = csvSpec.harmonicSaMaxFreqMHz / 2;
+            double limitDbc = csvSpec.SecondHarmonic.LowFreqLimit;
+
+            for (int j = 0; j < 4; j++)//RF<i><j>
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    if (!csvSpec.SecondHarmonic.rfChannelIsOn[j, i])
+                        continue;
+
+                    string routNum = i == 0 ? "1" : "12";
+                    if (cbRout.Visible)
+                        routNum = i == 0 ? rout : rout + "2";
+                    routNum = ResolveVsgRouteNum(i, routNum);
+                    string portLetter = i == 0 ? "A" : "B";
+
+                    int? maxCalFreq = useCal ? ConfigCAL.getMaxCalFreq(j, i, "SADUT") : null;
+
+                    for (int freqIndex = 0; freqIndex < csvSpec.SecondHarmonic.Frequency_Str.Count; freqIndex++)
+                    {
+                        int freq = csvSpec.SecondHarmonic.Frequency[freqIndex];
+                        int harmFreq = freq * 2;
+
+                        string skipReason = null;
+                        if (freq > maxFundamentalMHz)
+                            skipReason = "Freq OutOfRange";
+                        else if (useCal && (!maxCalFreq.HasValue || harmFreq > maxCalFreq.Value))
+                            skipReason = "No Cal Data";
+
+                        if (skipReason == null)
+                            DUTCommTester.SetupVSGChannel(freq, j + 1, portLetter, routNum);
+
+                        for (int powIndex = 0; powIndex < csvSpec.SecondHarmonic.Power_Str.Count; powIndex++)
+                        {
+                            string measuredValue = skipReason;
+                            string sDbc = "-";
+                            string sPFResult = "";
+
+                            if (skipReason == null)
+                            {
+                                int power = csvSpec.SecondHarmonic.Power[powIndex];
+                                DUTCommTester.SetupVSGPower(power, routNum);
+                                DUTCommTester.TransmitOn(routNum);
+                                Thread.Sleep(Settings.Default.delayStep);
+
+                                SA.WriteScpi("DISP:WIND:TRAC:Y:RLEV " + (power + 5) + " dBm");     //Reference level (attenuation stays fixed)
+
+                                sPFResult = "F";
+                                try
+                                {
+                                    double fundLoss = useCal ? ConfigCAL.getPowerLoss(freq, j, i, "SADUT") : 0;
+                                    double harmLoss = useCal ? ConfigCAL.getPowerLoss(harmFreq, j, i, "SADUT") : 0;
+
+                                    double fundDbm = ReadHarmonicMarkerDbm(freq, power) - fundLoss;
+                                    double harmDbm = ReadHarmonicMarkerDbm(harmFreq, power - 45) - harmLoss;
+                                    double dbc = harmDbm - fundDbm;
+
+                                    measuredValue = fundDbm.ToString("0.00") + " / " + harmDbm.ToString("0.00");
+                                    sDbc = dbc.ToString("0.00");
+
+                                    if (dbc <= limitDbc)
+                                    {
+                                        totalPassTest++;
+                                        sPFResult = "P";
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    measuredValue = "E:" + ex.Message;
+                                }
+                            }
+
+                            int rowIndex = rowCount++;
+                            Invoke((MethodInvoker)(() =>
+                            {
+                                if (rowIndex >= dtTestResult.Rows.Count)
+                                    return;
+                                dtTestResult.Rows[rowIndex][3] = measuredValue;
+                                dtTestResult.Rows[rowIndex][4] = sDbc == "-" ? "-" : sDbc + " dBc";
+                                dtTestResult.Rows[rowIndex][5] = sPFResult;
+                                lblPassRateValue.Text = totalPassTest + "/" + dtTestResult.Rows.Count;
+
+                                int rowEditedVisible = 3 + rowIndex - dataGridTestResult.Height / dataGridTestResult.RowTemplate.Height;
+                                if (rowEditedVisible > 0)
+                                    dataGridTestResult.FirstDisplayedScrollingRowIndex = rowEditedVisible;
+                            }));
+                        }
+                    }
+
+                    DUTCommTester.TransmitOff(routNum);
+                }
+            }
+
+            return true;
+        }
+
+        // Marker placed exactly on freqMHz (no peak search - at 2f there may be only noise, and a
+        // peak search would lock onto a nearby noise spike instead).
+        private double ReadHarmonicMarkerDbm(int freqMHz, double debugFallbackDbm)
+        {
+            SA.WriteScpi($"FREQ:CENT {freqMHz} MHz");
+            SA.WriteScpi("INIT;*WAI");                          //Set Single Sweep
+            SA.WriteScpi("CALC:MARK1:X " + (freqMHz * 1e6).ToString("0", CultureInfo.InvariantCulture) + " Hz");
+            string raw = SA.QueryScpi("CALC:MARK:Y?");
+
+            if (isDebug && string.IsNullOrEmpty(raw))
+                return debugFallbackDbm - new Random().NextDouble();
+            if (string.IsNullOrEmpty(raw))
+                throw new FormatException("SA no reply");
+
+            return double.Parse(raw.Trim().Split(',').Last().Trim(), CultureInfo.InvariantCulture);
         }
 
         private void updateSwitchPortButtons(int activePort)
@@ -2069,6 +2246,36 @@ namespace Pegatron
                                 }
                             }
 
+                            ///2nd Harmonic - kept last so it never shifts the row order of the sections above
+                            if (csvSpec.HasSecondHarmonic)
+                            {
+                                testName = SecondHarmonicTestName;
+
+                                for (int j = 0; j < 4; j++)//RF<i><j>
+                                {
+                                    for (int i = 0; i < 2; i++)
+                                    {
+                                        if (csvSpec.SecondHarmonic.rfChannelIsOn[j, i])
+                                        {
+                                            for (int freqIndex = 0; freqIndex < csvSpec.SecondHarmonic.Frequency_Str.Count; freqIndex++)
+                                            {
+                                                for (int powIndex = 0; powIndex < csvSpec.SecondHarmonic.Power_Str.Count; powIndex++)
+                                                {
+                                                    string bank = i == 0 ? "A" : "B";
+                                                    var rowObj = new object[] { testName, "RF" + (j + 1) + bank + ", " + csvSpec.SecondHarmonic.Frequency_Str[freqIndex] + "MHz", csvSpec.SecondHarmonic.Power_Str[powIndex] };
+
+                                                    if (!string.IsNullOrEmpty(testName))
+                                                        testName = "";
+                                                    BeginInvoke((MethodInvoker)(() =>
+                                                    {
+                                                        dtTestResult.Rows.Add(rowObj);
+                                                    }));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 
                             BeginInvoke((MethodInvoker)(() => lblPassRateValue.Text = "0/" + dtTestResult.Rows.Count));
                         }

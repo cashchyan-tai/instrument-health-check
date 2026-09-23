@@ -99,6 +99,10 @@ namespace Pegatron
                     FormatBandLimits(testData.VSAPowerAccuracy, "dB") +
                     "<u>Frequency Accuracy</u>" +
                     "<p>± " + testData.FrequencyAccuracy.FreqLimit + " ppm</p>" +
+                    (testData.HasSecondHarmonic
+                        ? "<u>2nd Harmonic</u>" +
+                          "<p>≤ " + testData.SecondHarmonic.LowFreqLimit + " dBc (fundamental ≤ " + (testData.harmonicSaMaxFreqMHz / 2) + " MHz)</p>"
+                        : "") +
                     "<br>" +
 
                     "<h3><b style='color:orange;'>Results</b></h3>" +
@@ -184,6 +188,14 @@ namespace Pegatron
                                     "</table>" +
                                     "<p style='page-break-before: always;'>&nbsp;</p>";
 
+                            bool isHarmonic = testName == "2nd Harmonic";
+                            string measuredHeader = testName == "Frequency Accuracy" ? "Measured Value<br>MHz"
+                                : isHarmonic ? "Fundamental / 2nd Harmonic<br>dBm"
+                                : "Measured Value<br>dBm";
+                            string accuracyHeader = testName == "Frequency Accuracy" ? "Accuracy<br>ppm"
+                                : isHarmonic ? "2nd Harmonic<br>dBc"
+                                : "Accuracy<br>dB";
+
                             htmlStr +=
                                 string.Format("<table class='resultTbl' style='width:100%; '>" +
                                     "<tr>" +
@@ -196,10 +208,10 @@ namespace Pegatron
                                     "<tr>" +
                                         "<th class='resultTbl'>Frequency<br>MHz</th>" +
                                         "<th class='resultTbl'>Reference Value<br>dBm</th>" +
-                                        "<th class='resultTbl'>Measured Value<br>{0}</th>" +
-                                        "<th class='resultTbl'>Accuracy<br>{1}</th>" +
+                                        "<th class='resultTbl'>{0}</th>" +
+                                        "<th class='resultTbl'>{1}</th>" +
                                         "<th class='resultTbl'>Pass/Fail</th>" +
-                                    "</tr>", testName == "Frequency Accuracy" ? "MHz" : "dBm", testName == "Frequency Accuracy" ? "ppm" : "dB");
+                                    "</tr>", measuredHeader, accuracyHeader);
                         }
 
                         string writtenFreq = arrPortFreq[1];
@@ -214,6 +226,8 @@ namespace Pegatron
                         string resultPF = "";
                         if (row[5].ToString() == "P")//Pass/Fail column text color
                             resultPF = "<b style='color:green;'>P</b>";
+                        else if (testName == "2nd Harmonic" && string.IsNullOrEmpty(row[5].ToString()))
+                            resultPF = "<b style='color:gray;'>N/A</b>";   // Freq OutOfRange / No Cal Data - not a failure
                         else
                             resultPF = "<b style='color:red;'>F</b>";
 
@@ -241,6 +255,9 @@ namespace Pegatron
                     "<h3 style='color:orange;'>Functions of Error Calculation</h3>" +
                     "<p>Error of Power Level (dB) = Result of DUT - Standard Value</p>" +
                     "<p>Frequency Error (ppm) = 1,000,000 X (Result of DUT - Standard Value) / Standard Value</p>" +
+                    (testData.HasSecondHarmonic
+                        ? "<p>2nd Harmonic (dBc) = Level at 2 X Frequency - Level at Frequency (both corrected with SA-DUT path loss)</p>"
+                        : "") +
 
                     "</body>" +
                     "</html>";
