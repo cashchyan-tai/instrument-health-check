@@ -23,6 +23,9 @@ namespace Pegatron
             this.btnRSFSW = new System.Windows.Forms.Button();
             this.btnRSGenerator = new System.Windows.Forms.Button();
             this.btnIQxelM8W = new System.Windows.Forms.Button();
+            this.btnOtherInstrument = new System.Windows.Forms.Button();
+            this.btnE4438C = new System.Windows.Forms.Button();
+            this.btnIQgigUWB = new System.Windows.Forms.Button();
             this.lblMsg = new System.Windows.Forms.Label();
             this.tlpPopupMain.SuspendLayout();
             this.SuspendLayout();
@@ -39,15 +42,19 @@ namespace Pegatron
             this.tlpPopupMain.Controls.Add(this.btnRSFSW, 0, 2);
             this.tlpPopupMain.Controls.Add(this.btnRSGenerator, 1, 2);
             this.tlpPopupMain.Controls.Add(this.btnIQxelM8W, 0, 3);
+            this.tlpPopupMain.Controls.Add(this.btnOtherInstrument, 1, 3);
+            this.tlpPopupMain.Controls.Add(this.btnE4438C, 0, 4);
+            this.tlpPopupMain.Controls.Add(this.btnIQgigUWB, 1, 4);
             this.tlpPopupMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpPopupMain.Location = new System.Drawing.Point(0, 0);
             this.tlpPopupMain.Name = "tlpPopupMain";
-            this.tlpPopupMain.RowCount = 4;
+            this.tlpPopupMain.RowCount = 5;
             this.tlpPopupMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this.tlpPopupMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tlpPopupMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tlpPopupMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tlpPopupMain.Size = new System.Drawing.Size(320, 156);
+            this.tlpPopupMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tlpPopupMain.Size = new System.Drawing.Size(320, 196);
             this.tlpPopupMain.TabIndex = 0;
             //
             // lblMsg
@@ -120,11 +127,44 @@ namespace Pegatron
             this.btnIQxelM8W.UseVisualStyleBackColor = true;
             this.btnIQxelM8W.Click += new System.EventHandler(this.btnIQxelM8W_Click);
             //
+            // btnOtherInstrument
+            //
+            this.btnOtherInstrument.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnOtherInstrument.Location = new System.Drawing.Point(178, 120);
+            this.btnOtherInstrument.Name = "btnOtherInstrument";
+            this.btnOtherInstrument.Size = new System.Drawing.Size(124, 23);
+            this.btnOtherInstrument.TabIndex = 5;
+            this.btnOtherInstrument.Text = "Other_SA";
+            this.btnOtherInstrument.UseVisualStyleBackColor = true;
+            this.btnOtherInstrument.Click += new System.EventHandler(this.btnOtherInstrument_Click);
+            //
+            // btnE4438C
+            //
+            this.btnE4438C.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnE4438C.Location = new System.Drawing.Point(18, 160);
+            this.btnE4438C.Name = "btnE4438C";
+            this.btnE4438C.Size = new System.Drawing.Size(124, 23);
+            this.btnE4438C.TabIndex = 6;
+            this.btnE4438C.Text = "Other_SG";
+            this.btnE4438C.UseVisualStyleBackColor = true;
+            this.btnE4438C.Click += new System.EventHandler(this.btnE4438C_Click);
+            //
+            // btnIQgigUWB
+            //
+            this.btnIQgigUWB.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnIQgigUWB.Location = new System.Drawing.Point(178, 160);
+            this.btnIQgigUWB.Name = "btnIQgigUWB";
+            this.btnIQgigUWB.Size = new System.Drawing.Size(124, 23);
+            this.btnIQgigUWB.TabIndex = 7;
+            this.btnIQgigUWB.Text = "IQgig-UWB";
+            this.btnIQgigUWB.UseVisualStyleBackColor = true;
+            this.btnIQgigUWB.Click += new System.EventHandler(this.btnIQgigUWB_Click);
+            //
             // SpecPopupForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(320, 156);
+            this.ClientSize = new System.Drawing.Size(320, 196);
             this.Controls.Add(this.tlpPopupMain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "SpecPopupForm";
@@ -145,6 +185,9 @@ namespace Pegatron
         private System.Windows.Forms.Button btnRSFSW;
         private System.Windows.Forms.Button btnRSGenerator;
         private System.Windows.Forms.Button btnIQxelM8W;
+        private System.Windows.Forms.Button btnOtherInstrument;
+        private System.Windows.Forms.Button btnE4438C;
+        private System.Windows.Forms.Button btnIQgigUWB;
         private System.Windows.Forms.Label lblMsg;
     }
 }

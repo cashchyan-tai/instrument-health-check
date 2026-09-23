@@ -80,11 +80,31 @@ namespace Pegatron
             return freqMHz.ToString();
         }
 
+        // Hard ceiling on commanded VSG output power, independent of what a spec CSV or manual
+        // entry requests. +5 dBm is the highest level LitePoint's own calibration certificate
+        // verifies for the M8W7G (VSG High Power Accuracy tops out at +5 dBm); clamping here keeps
+        // every code path - spec-driven test loops and the manual LP VSG panel alike - inside that
+        // verified envelope instead of trusting each caller not to exceed it.
+        public const double MaxVsgPowerDbm = 5.0;
+
         public void SetupVSGPower(double powerDBm, string routNum)
         {
+            if (powerDBm > MaxVsgPowerDbm)
+                powerDBm = MaxVsgPowerDbm;
+
             WriteScpi(_spec.scpiDUTSetVSGPow
                 .Replace("xx", powerDBm.ToString())
                 .Replace("zz", routNum));
+
+            // WAVE:EXEC (scpiDUTSetVSGOutputState) plays whatever waveform is currently built -
+            // without generating one first there's nothing to play, so RF stays silent even
+            // though every SCPI call reports success. 0 Hz modulation offset = plain CW at the
+            // carrier frequency already set via scpiDUTSetVSGFreq.
+            string waveGen = string.IsNullOrWhiteSpace(_spec.scpiDUTSetVSGWaveGen)
+                ? "VSGzz;WAVE:GEN:CWAV 0Hz,0Deg"
+                : _spec.scpiDUTSetVSGWaveGen;
+            WriteScpi(waveGen.Replace("zz", routNum));
+
             WriteScpi(_spec.scpiDUTSetVSGOutputState.Replace("zz", routNum));
         }
 

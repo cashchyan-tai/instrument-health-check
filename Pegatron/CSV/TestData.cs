@@ -20,6 +20,11 @@ namespace Pegatron
         public string switchType = "";          // "Rapidtek" or "" (default = Woken)
         public string dutType = "IQxel";        // "IQxel", "IQxstream-M", "RSAnalyzer", "RSGenerator"
 
+        // Optional raw-socket port for the DUT (e.g. LitePoint IQxstream/IQxel, which don't
+        // implement VXI-11 and must be reached on a fixed TCP port instead). Column is left
+        // blank for DUTs that connect fine via the default VISA resource (e.g. R&S over VXI-11).
+        public string dutPort = "";
+
         public string scpiDUTSetVSGMode = "";   //HK: Add
         public string scpiDUTSetVSGChannel = "";
         //public string scpiDUTSetVSGSamplingRate = "";
@@ -29,6 +34,10 @@ namespace Pegatron
         public string scpiDUTSetVSGPow = "";
         public string scpiDUTSetVSGRFOnOffState = "";
         public string scpiDUTSetVSGOutputState = "";
+        // Optional: builds the CW waveform WAVE:EXEC then plays. Without this, WAVE:EXEC has
+        // nothing loaded to play - RF power/state SCPI all succeeds but no signal is emitted.
+        // Falls back to a sane default in LitePointDUT.SetupVSGPower() when left blank.
+        public string scpiDUTSetVSGWaveGen = "";
 
         public string scpiDUTSetVSAMode = "";   //HK: Add
         public string scpiDUTSetVSAChannel = "";
@@ -54,10 +63,21 @@ namespace Pegatron
         public TestValues VSAPowerAccuracy;
         public TestValues FrequencyAccuracy;
 
-        public string generateSpecTemplate(string specName)
+        // VISA resource to hand to ConnectLan(): a raw socket on dutPort when one is given
+        // (LitePoint IQxel/IQxstream don't speak VXI-11), otherwise the bare IP so each DUT
+        // class falls back to its own default resource string (e.g. R&S's VXI-11/HiSLIP).
+        public string DutResource => string.IsNullOrWhiteSpace(dutPort)
+            ? ipDUT
+            : $"TCPIP0::{ipDUT}::{dutPort}::SOCKET";
+
+        // outputBaseName lets the generated filename differ from the embedded template's own
+        // name (e.g. a spec covering several MW port-count variants, or a generic "Other
+        // Instrument" template, shouldn't have one specific model baked into every file it spits
+        // out). Defaults to specName when the caller doesn't care.
+        public string generateSpecTemplate(string specName, string outputBaseName = null)
         {
             Assembly oAsesem = Assembly.GetEntryAssembly();
-            string fileName = IndexedFilename(specName);
+            string fileName = IndexedFilename(outputBaseName ?? specName);
             using (var stream = oAsesem.GetManifestResourceStream($"Pegatron.{specName}.csv"))
             using (var fileStream = File.Create(@".\\" + fileName))
             {
@@ -94,6 +114,16 @@ namespace Pegatron
             }
             File.WriteAllLines(@".\\" + fileName, lines);
         }
+        // Optional per-section low/high band crossover, stored in column 3 (index 2) of the
+        // HighFreqLimit row - a column every spec CSV already leaves blank, so older files without
+        // it just parse as "not set" (TestValues.LimitFor then applies LowFreqLimit everywhere).
+        static double? ParseOptionalBoundary(string[] curLine)
+        {
+            if (curLine.Length > 2 && double.TryParse(curLine[2], out double boundary))
+                return boundary;
+            return null;
+        }
+
         string IndexedFilename(string specName)
         {
             int ix = 0;
@@ -149,7 +179,6 @@ namespace Pegatron
                         curLine[1] = curLine[1].Replace("\"", "");
                     }
 
-                    string portName = "";
                     int numIndex = -1;
                     int alphaIndex = -1;
 
@@ -160,6 +189,7 @@ namespace Pegatron
                         case 1:
                             ipDUT = curLine[1];
                             dutType = curLine.Length > 2 && !string.IsNullOrWhiteSpace(curLine[2]) ? curLine[2].Trim() : "IQxel";
+                            dutPort = curLine.Length > 4 ? curLine[4].Trim() : "";
                             break;
                         case 2:
                             ipSG = curLine[1];
@@ -177,6 +207,9 @@ namespace Pegatron
 
                         ////RF Channel OnOff
                         ///VSG High Power
+                        // Port-enable rows are matched by absolute row position, not by parsing
+                        // curLine[0] - the label text (RF1A/RF1B, RF1 B1/B2, or a plain RF1..RF8
+                        // list for single-port DUTs) is free-form and only for human readability.
                         case 8:
                         case 9:
                         case 10:
@@ -185,10 +218,8 @@ namespace Pegatron
                         case 13:
                         case 14:
                         case 15:
-                            portName = curLine[0];
-                            numIndex = int.Parse(portName.Substring(2, 1)) - 1;
-                            alphaIndex = portName.Substring(3, 1) == "A" ? 0 : 1;
-                            alphaIndex = portName.Contains("A") || portName.Contains("B1") ? 0 : 1;
+                            numIndex = (row - 8) / 2;
+                            alphaIndex = (row - 8) % 2;
                             VSGHighPowerAccuracy.rfChannelIsOn[numIndex, alphaIndex] = curLine[1] == "1" ? true : false;
                             break;
 
@@ -201,9 +232,8 @@ namespace Pegatron
                         case 28:
                         case 29:
                         case 30:
-                            portName = curLine[0];
-                            numIndex = int.Parse(portName.Substring(2, 1)) - 1;
-                            alphaIndex = portName.Contains("A") || portName.Contains("B1") ? 0 : 1;
+                            numIndex = (row - 23) / 2;
+                            alphaIndex = (row - 23) % 2;
                             VSGLowPowerAccuracy.rfChannelIsOn[numIndex, alphaIndex] = curLine[1] == "1" ? true : false;
                             break;
 
@@ -216,9 +246,8 @@ namespace Pegatron
                         case 43:
                         case 44:
                         case 45:
-                            portName = curLine[0];
-                            numIndex = int.Parse(portName.Substring(2, 1)) - 1;
-                            alphaIndex = portName.Contains("A") || portName.Contains("B1") ? 0 : 1;
+                            numIndex = (row - 38) / 2;
+                            alphaIndex = (row - 38) % 2;
                             FrequencyAccuracy.rfChannelIsOn[numIndex, alphaIndex] = curLine[1] == "1" ? true : false;
                             break;
 
@@ -231,9 +260,8 @@ namespace Pegatron
                         case 56:
                         case 57:
                         case 58:
-                            portName = curLine[0];
-                            numIndex = int.Parse(portName.Substring(2, 1)) - 1;
-                            alphaIndex = portName.Contains("A") || portName.Contains("B1") ? 0 : 1;
+                            numIndex = (row - 51) / 2;
+                            alphaIndex = (row - 51) % 2;
                             VSAPowerAccuracy.rfChannelIsOn[numIndex, alphaIndex] = curLine[1] == "1" ? true : false;
                             break;
 
@@ -294,6 +322,7 @@ namespace Pegatron
                             break;
                         case 20:
                             VSGHighPowerAccuracy.HighFreqLimit = double.Parse(curLine[1]);
+                            VSGHighPowerAccuracy.BandBoundaryMHz = ParseOptionalBoundary(curLine);
                             break;
                         ///VSG Low Power
                         case 34:
@@ -301,6 +330,7 @@ namespace Pegatron
                             break;
                         case 35:
                             VSGLowPowerAccuracy.HighFreqLimit = double.Parse(curLine[1]);
+                            VSGLowPowerAccuracy.BandBoundaryMHz = ParseOptionalBoundary(curLine);
                             break;
                         ///Frequency Accuracy
                         case 48:
@@ -312,6 +342,7 @@ namespace Pegatron
                             break;
                         case 63:
                             VSAPowerAccuracy.HighFreqLimit = double.Parse(curLine[1]);
+                            VSAPowerAccuracy.BandBoundaryMHz = ParseOptionalBoundary(curLine);
                             break;
 
                         ////DUT Control SCPI //HK Move location
@@ -386,6 +417,9 @@ namespace Pegatron
                         case 85:
                             if (!string.IsNullOrWhiteSpace(curLine[1])) vsgPathB = curLine[1].Trim();
                             break;
+                        case 86:
+                            scpiDUTSetVSGWaveGen = curLine[1];
+                            break;
 
                         default: break;
                     }
@@ -407,5 +441,6 @@ namespace Pegatron
 
             return true;
         }
+
     }
 }

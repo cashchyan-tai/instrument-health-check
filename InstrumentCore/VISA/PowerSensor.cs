@@ -67,9 +67,7 @@ namespace Pegatron
         {
             this.WriteScpi($"FREQ {sFreq_Hz}000000");
             this.WriteScpi("INIT");
-            this.WaitOpc();
-
-            Thread.Sleep(100);
+            this.WaitOpc();  // OPC set = INIT measurement (incl. averaging) finished, safe to FETC? immediately
 
             string sRslt = this.QueryScpi("FETC?");
             if (string.IsNullOrEmpty(sRslt) || string.IsNullOrWhiteSpace(sRslt))
@@ -88,9 +86,12 @@ namespace Pegatron
             this.WriteScpi("*CLS");
             this.WriteScpi("*RST");
             this.WriteScpi("CAL:ZERO:AUTO ONCE");
-            this.WriteScpi("WAI*");
-            this.WriteScpi("SENSe:TRACe:AVERage:COUNt 60");
-            this.WriteScpi("SENSe:TRACe:AVERage:STATe ON");
+            this.WaitOpc();  // zeroing takes several seconds
+            // Continuous-average mode (the *RST default) uses SENS:AVER:*, not SENS:TRAC:AVER:*.
+            // Fixed count instead of AUTO so low-level high-freq points don't auto-pick a huge filter.
+            this.WriteScpi("SENSe:AVERage:COUNt:AUTO OFF");
+            this.WriteScpi("SENSe:AVERage:COUNt 16");
+            this.WriteScpi("SENSe:AVERage:STATe ON");
             this.WriteScpi("INIT:CONT OFF");
         }
 

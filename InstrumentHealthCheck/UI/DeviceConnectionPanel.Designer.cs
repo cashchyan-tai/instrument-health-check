@@ -73,6 +73,7 @@ namespace InstrumentHealthCheck.UI
             this.txtDutIp.Name = "txtDutIp";
             this.txtDutIp.Size = new System.Drawing.Size(140, 23);
             this.txtDutIp.TabIndex = 3;
+            this.txtDutIp.Text = "192.168.100.198";
             //
             // lblDutIp
             //

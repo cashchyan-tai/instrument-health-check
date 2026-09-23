@@ -340,6 +340,7 @@ namespace Pegatron
             this.panelLPVSG.Name = "panelLPVSG";
             this.panelLPVSG.Size = new System.Drawing.Size(294, 145);
             this.panelLPVSG.TabIndex = 30;
+            this.panelLPVSG.Visible = false;
             // 
             // lblLPVSGTitle
             // 
@@ -1279,6 +1280,7 @@ namespace Pegatron
             this.button1.TabIndex = 173;
             this.button1.Text = "Port 1";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
@@ -1292,6 +1294,7 @@ namespace Pegatron
             this.button2.TabIndex = 174;
             this.button2.Text = "Port 3";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // btnDebugStart
@@ -1305,6 +1308,7 @@ namespace Pegatron
             this.btnDebugStart.TabIndex = 175;
             this.btnDebugStart.Text = "Debug";
             this.btnDebugStart.UseVisualStyleBackColor = false;
+            this.btnDebugStart.Visible = false;
             this.btnDebugStart.Click += new System.EventHandler(this.btnDebugStart_Click);
             // 
             // lblDebug
@@ -1327,6 +1331,7 @@ namespace Pegatron
             this.button3.TabIndex = 177;
             this.button3.Text = "button3";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // panelCSV

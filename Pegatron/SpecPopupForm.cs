@@ -41,5 +41,23 @@ namespace Pegatron
             selectedSpec = "Specifications_IQXEL_M8W";
             this.Close();
         }
+
+        private void btnOtherInstrument_Click(object sender, EventArgs e)
+        {
+            selectedSpec = "Specifications_Keysight_N9020A";
+            this.Close();
+        }
+
+        private void btnE4438C_Click(object sender, EventArgs e)
+        {
+            selectedSpec = "Specifications_Keysight_E4438C";
+            this.Close();
+        }
+
+        private void btnIQgigUWB_Click(object sender, EventArgs e)
+        {
+            selectedSpec = "Specifications_IQgig_UWB";
+            this.Close();
+        }
     }
 }

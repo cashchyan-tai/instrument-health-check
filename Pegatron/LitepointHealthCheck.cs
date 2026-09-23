@@ -1,6 +1,7 @@
 ﻿using Pegatron.Properties;
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -48,9 +49,29 @@ namespace Pegatron
         public bool isPauseMode = false;
         //private bool noError = true;
 
+        private Button btnSwitchToInstrumentHealthCheck;
+
         public LitepointHealthCheck()
         {
             InitializeComponent();
+
+            // Added in code rather than the designer to avoid touching the existing
+            // TableLayoutPanel layout; floats over mainPanel, pinned to the top-right corner.
+            btnSwitchToInstrumentHealthCheck = new Button
+            {
+                Text = "切換到 InstrumentHealthCheck",
+                Size = new Size(220, 27),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                BackColor = Color.FromArgb(48, 48, 48),
+                ForeColor = Color.LightGray,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
+                Font = new Font("Consolas", 9F)
+            };
+            btnSwitchToInstrumentHealthCheck.Location = new Point(ClientSize.Width - btnSwitchToInstrumentHealthCheck.Width - 12, 8);
+            btnSwitchToInstrumentHealthCheck.Click += btnSwitchToInstrumentHealthCheck_Click;
+            Controls.Add(btnSwitchToInstrumentHealthCheck);
+            btnSwitchToInstrumentHealthCheck.BringToFront();
 
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
@@ -67,7 +88,7 @@ namespace Pegatron
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
             
             dataGridTestResult.DefaultCellStyle = dataGridViewCellStyle2;
-            cbRout.SelectedIndex = 0;
+            cbRout.SelectedIndex = 1; // default to port "1" so single-port DUTs don't need to set this every run
             cbLPVSGPort.SelectedIndex = 0;
             lblDebug.Text = $"v{ProductVersion}";
 
@@ -408,8 +429,7 @@ namespace Pegatron
                                                         if (sAccuracy != "-")
                                                         {
                                                             double retryAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                            if (csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] <= 3800 && retryAccuracy < csvSpec.VSGHighPowerAccuracy.LowFreqLimit
-                                                            || csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] > 3800 && retryAccuracy < csvSpec.VSGHighPowerAccuracy.HighFreqLimit)
+                                                            if (retryAccuracy < csvSpec.VSGHighPowerAccuracy.LimitFor(csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex]))
                                                                 break;
                                                         }
                                                         }
@@ -422,8 +442,7 @@ namespace Pegatron
                                                     else if (sAccuracy != "-")
                                                     {
                                                         double unSignedAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                        if (csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] <= 3800 && unSignedAccuracy < csvSpec.VSGHighPowerAccuracy.LowFreqLimit
-                                                        || csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] > 3800 && unSignedAccuracy < csvSpec.VSGHighPowerAccuracy.HighFreqLimit)  //check if pass/fail
+                                                        if (unSignedAccuracy < csvSpec.VSGHighPowerAccuracy.LimitFor(csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex]))  //check if pass/fail
                                                         {
                                                             totalPassTest++;
                                                             sPFResult = "P";
@@ -531,8 +550,7 @@ namespace Pegatron
                                                         if (sAccuracy != "-")
                                                         {
                                                             double retryAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                            if (csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] <= 3800 && retryAccuracy < csvSpec.VSGLowPowerAccuracy.LowFreqLimit
-                                                            || csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] > 3800 && retryAccuracy < csvSpec.VSGLowPowerAccuracy.HighFreqLimit)
+                                                            if (retryAccuracy < csvSpec.VSGLowPowerAccuracy.LimitFor(csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex]))
                                                                 break;
                                                         }
                                                         }
@@ -545,8 +563,7 @@ namespace Pegatron
                                                     else if (sAccuracy != "-")
                                                     {
                                                         double unSignedAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                        if (csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] <= 3800 && unSignedAccuracy < csvSpec.VSGLowPowerAccuracy.LowFreqLimit
-                                                        || csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] > 3800 && unSignedAccuracy < csvSpec.VSGLowPowerAccuracy.HighFreqLimit)//check if pass/fail
+                                                        if (unSignedAccuracy < csvSpec.VSGLowPowerAccuracy.LimitFor(csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex]))//check if pass/fail
                                                         {
                                                             totalPassTest++;
                                                             sPFResult = "P";
@@ -814,8 +831,7 @@ namespace Pegatron
                                                     if (sAccuracy != "-")
                                                     {
                                                         double retryAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                        if (csvSpec.VSAPowerAccuracy.Frequency[freqIndex] <= 3800 && retryAccuracy < csvSpec.VSAPowerAccuracy.LowFreqLimit
-                                                        || csvSpec.VSAPowerAccuracy.Frequency[freqIndex] > 3800 && retryAccuracy < csvSpec.VSAPowerAccuracy.HighFreqLimit)
+                                                        if (retryAccuracy < csvSpec.VSAPowerAccuracy.LimitFor(csvSpec.VSAPowerAccuracy.Frequency[freqIndex]))
                                                             break;
                                                     }
                                                     }
@@ -828,8 +844,7 @@ namespace Pegatron
                                                 else if (sAccuracy != "-")
                                                 {
                                                     double unSignedAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                    if (csvSpec.VSAPowerAccuracy.Frequency[freqIndex] <= 3800 && unSignedAccuracy < csvSpec.VSAPowerAccuracy.LowFreqLimit
-                                                    || csvSpec.VSAPowerAccuracy.Frequency[freqIndex] > 3800 && unSignedAccuracy < csvSpec.VSAPowerAccuracy.HighFreqLimit)//check if pass/fail
+                                                    if (unSignedAccuracy < csvSpec.VSAPowerAccuracy.LimitFor(csvSpec.VSAPowerAccuracy.Frequency[freqIndex]))//check if pass/fail
                                                     {
                                                         totalPassTest++;
                                                         sPFResult = "P";
@@ -1052,8 +1067,7 @@ namespace Pegatron
                                                         if (sAccuracy != "-")
                                                         {
                                                             double retryAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                            if (csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] <= 3800 && retryAccuracy < csvSpec.VSGHighPowerAccuracy.LowFreqLimit
-                                                            || csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] > 3800 && retryAccuracy < csvSpec.VSGHighPowerAccuracy.HighFreqLimit)
+                                                            if (retryAccuracy < csvSpec.VSGHighPowerAccuracy.LimitFor(csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex]))
                                                                 break;
                                                         }
                                                         }
@@ -1066,8 +1080,7 @@ namespace Pegatron
                                                     else if (sAccuracy != "-")
                                                     {
                                                         double unSignedAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                        if (csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] <= 3800 && unSignedAccuracy < csvSpec.VSGHighPowerAccuracy.LowFreqLimit
-                                                        || csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex] > 3800 && unSignedAccuracy < csvSpec.VSGHighPowerAccuracy.HighFreqLimit)  //check if pass/fail
+                                                        if (unSignedAccuracy < csvSpec.VSGHighPowerAccuracy.LimitFor(csvSpec.VSGHighPowerAccuracy.Frequency[freqIndex]))  //check if pass/fail
                                                         {
                                                             totalPassTest++;
                                                             sPFResult = "P";
@@ -1179,8 +1192,7 @@ namespace Pegatron
                                                         if (sAccuracy != "-")
                                                         {
                                                             double retryAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                            if (csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] <= 3800 && retryAccuracy < csvSpec.VSGLowPowerAccuracy.LowFreqLimit
-                                                            || csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] > 3800 && retryAccuracy < csvSpec.VSGLowPowerAccuracy.HighFreqLimit)
+                                                            if (retryAccuracy < csvSpec.VSGLowPowerAccuracy.LimitFor(csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex]))
                                                                 break;
                                                         }
                                                         }
@@ -1193,8 +1205,7 @@ namespace Pegatron
                                                     else if (sAccuracy != "-")
                                                     {
                                                         double unSignedAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                        if (csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] <= 3800 && unSignedAccuracy < csvSpec.VSGLowPowerAccuracy.LowFreqLimit
-                                                        || csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex] > 3800 && unSignedAccuracy < csvSpec.VSGLowPowerAccuracy.HighFreqLimit)//check if pass/fail
+                                                        if (unSignedAccuracy < csvSpec.VSGLowPowerAccuracy.LimitFor(csvSpec.VSGLowPowerAccuracy.Frequency[freqIndex]))//check if pass/fail
                                                         {
                                                             totalPassTest++;
                                                             sPFResult = "P";
@@ -1470,8 +1481,7 @@ namespace Pegatron
                                                     if (sAccuracy != "-")
                                                     {
                                                         double retryAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                        if (csvSpec.VSAPowerAccuracy.Frequency[freqIndex] <= 3800 && retryAccuracy < csvSpec.VSAPowerAccuracy.LowFreqLimit
-                                                        || csvSpec.VSAPowerAccuracy.Frequency[freqIndex] > 3800 && retryAccuracy < csvSpec.VSAPowerAccuracy.HighFreqLimit)
+                                                        if (retryAccuracy < csvSpec.VSAPowerAccuracy.LimitFor(csvSpec.VSAPowerAccuracy.Frequency[freqIndex]))
                                                             break;
                                                     }
                                                     }
@@ -1484,8 +1494,7 @@ namespace Pegatron
                                                 else if (sAccuracy != "-")
                                                 {
                                                     double unSignedAccuracy = Math.Abs(double.Parse(sAccuracy));
-                                                    if (csvSpec.VSAPowerAccuracy.Frequency[freqIndex] <= 3800 && unSignedAccuracy < csvSpec.VSAPowerAccuracy.LowFreqLimit
-                                                    || csvSpec.VSAPowerAccuracy.Frequency[freqIndex] > 3800 && unSignedAccuracy < csvSpec.VSAPowerAccuracy.HighFreqLimit)//check if pass/fail
+                                                    if (unSignedAccuracy < csvSpec.VSAPowerAccuracy.LimitFor(csvSpec.VSAPowerAccuracy.Frequency[freqIndex]))//check if pass/fail
                                                     {
                                                         totalPassTest++;
                                                         sPFResult = "P";
@@ -1658,7 +1667,7 @@ namespace Pegatron
                         DUTCommTester = lp;
                     }
 
-                    DUTConnected = DUTCommTester.ConnectLan(csvSpec.ipDUT);
+                    DUTConnected = DUTCommTester.ConnectLan(csvSpec.DutResource);
                     DUTCommTester.GetIDN();
                     isConnecting--;
 
@@ -1817,6 +1826,28 @@ namespace Pegatron
             connectSwitch();
         }
 
+        private void btnSwitchToInstrumentHealthCheck_Click(object sender, EventArgs e)
+        {
+            if (isTesting)
+                return;
+
+            string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InstrumentHealthCheck.exe");
+            if (!File.Exists(exePath))
+            {
+                MessageBox.Show(
+                    "找不到 InstrumentHealthCheck.exe，請確認兩個程式的執行檔已放在同一個資料夾。\n" + exePath,
+                    "找不到程式", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Release the VISA sessions before handing off - otherwise InstrumentHealthCheck's
+            // connect attempt on the same instrument can fail with the resource still busy.
+            disconnectAll();
+
+            Process.Start(exePath, "--from-lp");
+            Close();
+        }
+
         private void disconnectAll()
         {
             if (SGConnected)
@@ -1847,7 +1878,20 @@ namespace Pegatron
         {
             SpecPopupForm popup = new SpecPopupForm();
             popup.ShowDialog();
-            string generatedFileName = csvSpec.generateSpecTemplate(popup.selectedSpec);
+
+            // Generated filename shouldn't bake in one specific model when the template covers
+            // a family of them - M8W's file also fits M2W/M4W/M6W, and the "Other" slots are
+            // named by instrument role (SA/SG) rather than the specific Keysight model, so a
+            // different SA/SG later can reuse the same slot without renaming anything.
+            string outputBaseName = popup.selectedSpec;
+            if (popup.selectedSpec == "Specifications_IQXEL_M8W")
+                outputBaseName = "Specifications_MW";
+            else if (popup.selectedSpec == "Specifications_Keysight_N9020A")
+                outputBaseName = "Specifications_Other_SA";
+            else if (popup.selectedSpec == "Specifications_Keysight_E4438C")
+                outputBaseName = "Specifications_Other_SG";
+
+            string generatedFileName = csvSpec.generateSpecTemplate(popup.selectedSpec, outputBaseName);
 
             bool isTx = popup.selectedSpec == "Specifications_RS_Generator";
             bool isRx = popup.selectedSpec == "Specifications_RS_FSW";
@@ -2024,6 +2068,7 @@ namespace Pegatron
                                     }
                                 }
                             }
+
 
                             BeginInvoke((MethodInvoker)(() => lblPassRateValue.Text = "0/" + dtTestResult.Rows.Count));
                         }

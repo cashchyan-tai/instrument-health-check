@@ -38,6 +38,9 @@ namespace Pegatron
 
         private void CalibrationForm_Load(object sender, EventArgs e)
         {
+            numericUpDownSGSADelay.Value = Settings.Default.delayCalibration;
+            numericUpDownPSDelay.Value = Settings.Default.delayPowerSensorSettle;
+
             initializeDTSGDUT();
             initializeDTSADUT();
 
@@ -125,6 +128,7 @@ namespace Pegatron
             btnApply.Visible = false;
             btnConnectionDiagramPanel.Visible = false;
             panelSGSASettings.Visible = true;
+            panelPSDelay.Visible = false;
             dataGridViewCalTable.Visible = false;
             panelSGSAChartArea.Visible = true;
 
@@ -252,6 +256,7 @@ namespace Pegatron
             btnApply.Visible = true;
             btnConnectionDiagramPanel.Visible = true;
             panelSGSASettings.Visible = false;
+            panelPSDelay.Visible = true;
             dataGridViewCalTable.Visible = true;
             panelSGSAChartArea.Visible = false;
 
@@ -300,6 +305,8 @@ namespace Pegatron
             tabSGDUT.Enabled = false;
             tabSADUT.Enabled = false;
             tabSGSA.Enabled = false;
+
+            int psDelayMs = (int)numericUpDownPSDelay.Value;
 
             calThread = new Thread(delegate ()
             {
@@ -372,7 +379,7 @@ namespace Pegatron
                             else
                                 Invoke((MethodInvoker)(() => dataGridViewCalTable.FirstDisplayedScrollingRowIndex = 0));
 
-                            string freq = DoCalibration(dtSGDUT.Rows[row].Field<string>("Frequency MHz"));
+                            string freq = DoCalibration(dtSGDUT.Rows[row].Field<string>("Frequency MHz"), psDelayMs);
                             dtSGDUT.Rows[row][port] = freq;
                         }
                         LHC.ConfigCAL.CSVSave(dtSGDUT, "SGDUT");
@@ -438,7 +445,7 @@ namespace Pegatron
                             else
                                 Invoke((MethodInvoker)(() => dataGridViewCalTable.FirstDisplayedScrollingRowIndex = 0));
 
-                            string freq = DoCalibration(dtSADUT.Rows[row].Field<string>("Frequency MHz"));
+                            string freq = DoCalibration(dtSADUT.Rows[row].Field<string>("Frequency MHz"), psDelayMs);
                             dtSADUT.Rows[row][port] = freq;
                         }
                         LHC.ConfigCAL.CSVSave(dtSADUT, "SADUT");
@@ -520,14 +527,14 @@ namespace Pegatron
             }));
         }
 
-        private string DoCalibration(string sFreq)
+        private string DoCalibration(string sFreq, int delayMs)
         {
             //LHC.SG.WriteScpi("SOUR:CORR:STAT 0");
             LHC.SG.WriteScpi($"SOUR1:FREQ:CW {sFreq} MHz");
             //LHC.SG.WriteScpi("SOUR1:POW:POW 0");
             //LHC.SG.QueryScpi("OUTP1:STAT 1;*OPC?");
             LHC.SG.WaitOpc();
-            System.Threading.Thread.Sleep(500);  // extra wait after SG settles — increase if PS still misses
+            System.Threading.Thread.Sleep(delayMs);  // extra wait after SG settles — increase if PS still misses
             //LHC.PS.ClearOffset();
             string dRslt = LHC.PS.GetPower(sFreq);
             //LHC.SG.QueryScpi("OUTP1:STAT 0;*OPC?");
@@ -566,7 +573,7 @@ namespace Pegatron
         // one Loss(dB)=SGPower-SAMeasured point per frequency step. Runs on calThread.
         private void RunSGSASweep()
         {
-            int startFreq = 400, endFreq = 7200, step = 100;
+            int startFreq = 400, endFreq = 7200, step = 100, delayMs = 500;
             double sgPower = 0;
             Invoke((MethodInvoker)(() =>
             {
@@ -574,6 +581,7 @@ namespace Pegatron
                 endFreq = (int)numericUpDownEndFreq.Value;
                 step = (int)numericUpDownSGSAStep.Value;
                 sgPower = (double)numericUpDownSGSAPower.Value;
+                delayMs = (int)numericUpDownSGSADelay.Value;
                 lblSGSAStatus.Text = "Starting sweep...";
             }));
 
@@ -616,7 +624,7 @@ namespace Pegatron
 
                 LHC.SG.WriteScpi($"SOUR1:FREQ:CW {freq} MHz");
                 LHC.SA.WriteScpi($"FREQ:CENT {freq} MHz");
-                Thread.Sleep(Settings.Default.delayStep);
+                Thread.Sleep(delayMs);
 
                 LHC.SA.WriteScpi($"DISP:WIND:TRAC:Y:RLEV {sgPower + 5} dBm");
                 LHC.SA.WriteScpi("INIT;*WAI");
@@ -789,6 +797,18 @@ namespace Pegatron
         {
             if (sender is NumericUpDown nud)
                 nud.BeginInvoke((MethodInvoker)(() => nud.Select(0, nud.Text.Length)));
+        }
+
+        private void numericUpDownSGSADelay_ValueChanged(object sender, EventArgs e)
+        {
+            Settings.Default.delayCalibration = (int)numericUpDownSGSADelay.Value;
+            Settings.Default.Save();
+        }
+
+        private void numericUpDownPSDelay_ValueChanged(object sender, EventArgs e)
+        {
+            Settings.Default.delayPowerSensorSettle = (int)numericUpDownPSDelay.Value;
+            Settings.Default.Save();
         }
 
         private void CalibrationForm_Leave(object sender, EventArgs e)

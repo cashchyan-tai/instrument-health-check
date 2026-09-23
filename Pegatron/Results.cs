@@ -25,6 +25,20 @@ namespace Pegatron
     public class Results
     {
         private static bool isDebug = false;
+
+        // Renders a section's acceptance limit(s) - one line when it has no band boundary (a
+        // single limit covers every frequency), two lines split at the boundary when it does.
+        private static string FormatBandLimits(TestValues values, string unit)
+        {
+            if (values.BandBoundaryMHz.HasValue)
+            {
+                double boundary = values.BandBoundaryMHz.Value;
+                return
+                    "<p>≤ " + boundary + " MHz: ± " + values.LowFreqLimit + " " + unit + "</p>" +
+                    "<p>&gt; " + boundary + " MHz: ± " + values.HighFreqLimit + " " + unit + "</p>";
+            }
+            return "<p>All frequencies: ± " + values.LowFreqLimit + " " + unit + "</p>";
+        }
         public static void createReport(System.Data.DataTable resultTable, TestData testData, IDUTInstrument dut, SignalGenerator SG, SpectrumAnalyzer SA, PowerSensor PS, ISwitchBox Sw, DateTime dt, int totalPass, TimeSpan testDuration, bool isStopped, bool isdebug)
         {
             isDebug = isdebug;
@@ -78,14 +92,11 @@ namespace Pegatron
 
                     "<h3><b style='color:orange;'>Accuracy Acceptance Limit</b></h3>" +
                     "<u>VSG High Power Accuracy (≥ -50 dBm )</u>" +
-                    "<p>400-3800 MHz: ± " + testData.VSGHighPowerAccuracy.LowFreqLimit + " dB</p>" +
-                    "<p>3801-7300 MHz: ± " + testData.VSGHighPowerAccuracy.HighFreqLimit + " dB</p>" +
+                    FormatBandLimits(testData.VSGHighPowerAccuracy, "dB") +
                     "<u>VSG Low Power Accuracy (-100 to -50 dBm )</u>" +
-                    "<p>400-3800 MHz: ± " + testData.VSGLowPowerAccuracy.LowFreqLimit + " dB</p>" +
-                    "<p>3801-7300 MHz: ± " + testData.VSGLowPowerAccuracy.HighFreqLimit + " dB</p>" +
+                    FormatBandLimits(testData.VSGLowPowerAccuracy, "dB") +
                     "<u>VSA Power Accuracy</u>" +
-                    "<p>400-3800 MHz: ± " + testData.VSAPowerAccuracy.LowFreqLimit + " dB</p>" +
-                    "<p>3801-7300 MHz: ± " + testData.VSAPowerAccuracy.HighFreqLimit + " dB</p>" +
+                    FormatBandLimits(testData.VSAPowerAccuracy, "dB") +
                     "<u>Frequency Accuracy</u>" +
                     "<p>± " + testData.FrequencyAccuracy.FreqLimit + " ppm</p>" +
                     "<br>" +

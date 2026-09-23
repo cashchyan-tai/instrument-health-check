@@ -66,8 +66,13 @@
             this.numericUpDownSGSAPower = new System.Windows.Forms.NumericUpDown();
             this.lblSGSAStep = new System.Windows.Forms.Label();
             this.numericUpDownSGSAStep = new System.Windows.Forms.NumericUpDown();
+            this.lblSGSADelay = new System.Windows.Forms.Label();
+            this.numericUpDownSGSADelay = new System.Windows.Forms.NumericUpDown();
             this.btnClearSGSAHistory = new System.Windows.Forms.Button();
             this.lblSGSAStatus = new System.Windows.Forms.Label();
+            this.panelPSDelay = new System.Windows.Forms.TableLayoutPanel();
+            this.lblPSDelay = new System.Windows.Forms.Label();
+            this.numericUpDownPSDelay = new System.Windows.Forms.NumericUpDown();
             this.tableLayoutPanelCalMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCalTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartSGSA)).BeginInit();
@@ -85,6 +90,9 @@
             this.panelSGSASettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSGSAPower)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSGSAStep)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSGSADelay)).BeginInit();
+            this.panelPSDelay.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPSDelay)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanelCalMain
@@ -260,18 +268,20 @@
             this.tableLayoutPanelSideBar.ColumnCount = 1;
             this.tableLayoutPanelSideBar.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelSideBar.Controls.Add(this.tableLayoutPanelCalData, 0, 0);
-            this.tableLayoutPanelSideBar.Controls.Add(this.buttonStartCalibration, 0, 2);
+            this.tableLayoutPanelSideBar.Controls.Add(this.buttonStartCalibration, 0, 3);
             this.tableLayoutPanelSideBar.Controls.Add(this.btnConnectionDiagramPanel, 0, 1);
             this.tableLayoutPanelSideBar.Controls.Add(this.panelSGSASettings, 0, 1);
+            this.tableLayoutPanelSideBar.Controls.Add(this.panelPSDelay, 0, 2);
             this.tableLayoutPanelSideBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelSideBar.Location = new System.Drawing.Point(0, 50);
             this.tableLayoutPanelSideBar.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanelSideBar.Name = "tableLayoutPanelSideBar";
-            this.tableLayoutPanelSideBar.RowCount = 3;
+            this.tableLayoutPanelSideBar.RowCount = 4;
             this.tableLayoutPanelSideBar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableLayoutPanelSideBar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.tableLayoutPanelSideBar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanelSideBar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanelSideBar.Size = new System.Drawing.Size(165, 430);
+            this.tableLayoutPanelSideBar.Size = new System.Drawing.Size(165, 470);
             this.tableLayoutPanelSideBar.TabIndex = 1;
             // 
             // tableLayoutPanelCalData
@@ -395,21 +405,25 @@
             this.panelSGSASettings.Controls.Add(this.numericUpDownSGSAPower, 0, 1);
             this.panelSGSASettings.Controls.Add(this.lblSGSAStep, 0, 2);
             this.panelSGSASettings.Controls.Add(this.numericUpDownSGSAStep, 0, 3);
-            this.panelSGSASettings.Controls.Add(this.btnClearSGSAHistory, 0, 4);
-            this.panelSGSASettings.Controls.Add(this.lblSGSAStatus, 0, 5);
+            this.panelSGSASettings.Controls.Add(this.lblSGSADelay, 0, 4);
+            this.panelSGSASettings.Controls.Add(this.numericUpDownSGSADelay, 0, 5);
+            this.panelSGSASettings.Controls.Add(this.btnClearSGSAHistory, 0, 6);
+            this.panelSGSASettings.Controls.Add(this.lblSGSAStatus, 0, 7);
             this.panelSGSASettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelSGSASettings.Location = new System.Drawing.Point(0, 150);
             this.panelSGSASettings.Margin = new System.Windows.Forms.Padding(0);
             this.panelSGSASettings.Name = "panelSGSASettings";
             this.panelSGSASettings.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-            this.panelSGSASettings.RowCount = 6;
+            this.panelSGSASettings.RowCount = 8;
+            this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.panelSGSASettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.panelSGSASettings.Size = new System.Drawing.Size(165, 224);
+            this.panelSGSASettings.Size = new System.Drawing.Size(165, 274);
             this.panelSGSASettings.TabIndex = 173;
             this.panelSGSASettings.Visible = false;
             //
@@ -495,6 +509,53 @@
             0});
             this.numericUpDownSGSAStep.Enter += new System.EventHandler(this.numericUpDown_Enter);
             //
+            // lblSGSADelay
+            //
+            this.lblSGSADelay.AutoSize = true;
+            this.lblSGSADelay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSGSADelay.Font = new System.Drawing.Font("Consolas", 9F);
+            this.lblSGSADelay.ForeColor = System.Drawing.Color.White;
+            this.lblSGSADelay.Location = new System.Drawing.Point(6, 104);
+            this.lblSGSADelay.Name = "lblSGSADelay";
+            this.lblSGSADelay.Size = new System.Drawing.Size(153, 22);
+            this.lblSGSADelay.TabIndex = 4;
+            this.lblSGSADelay.Text = "Delay (ms):";
+            //
+            // numericUpDownSGSADelay
+            //
+            this.numericUpDownSGSADelay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.numericUpDownSGSADelay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.numericUpDownSGSADelay.Dock = System.Windows.Forms.DockStyle.Top;
+            this.numericUpDownSGSADelay.Font = new System.Drawing.Font("Consolas", 10F);
+            this.numericUpDownSGSADelay.ForeColor = System.Drawing.Color.White;
+            this.numericUpDownSGSADelay.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDownSGSADelay.Location = new System.Drawing.Point(6, 126);
+            this.numericUpDownSGSADelay.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.numericUpDownSGSADelay.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.numericUpDownSGSADelay.Name = "numericUpDownSGSADelay";
+            this.numericUpDownSGSADelay.Size = new System.Drawing.Size(153, 27);
+            this.numericUpDownSGSADelay.TabIndex = 5;
+            this.numericUpDownSGSADelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDownSGSADelay.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.numericUpDownSGSADelay.Enter += new System.EventHandler(this.numericUpDown_Enter);
+            this.numericUpDownSGSADelay.ValueChanged += new System.EventHandler(this.numericUpDownSGSADelay_ValueChanged);
+            //
             // btnClearSGSAHistory
             //
             this.btnClearSGSAHistory.AutoEllipsis = true;
@@ -508,7 +569,7 @@
             this.btnClearSGSAHistory.Name = "btnClearSGSAHistory";
             this.btnClearSGSAHistory.Padding = new System.Windows.Forms.Padding(0);
             this.btnClearSGSAHistory.Size = new System.Drawing.Size(153, 24);
-            this.btnClearSGSAHistory.TabIndex = 5;
+            this.btnClearSGSAHistory.TabIndex = 6;
             this.btnClearSGSAHistory.Text = "Clear All";
             this.btnClearSGSAHistory.UseVisualStyleBackColor = true;
             this.btnClearSGSAHistory.Click += new System.EventHandler(this.btnClearSGSAHistory_Click);
@@ -521,11 +582,78 @@
             this.lblSGSAStatus.Location = new System.Drawing.Point(6, 132);
             this.lblSGSAStatus.Name = "lblSGSAStatus";
             this.lblSGSAStatus.Size = new System.Drawing.Size(153, 88);
-            this.lblSGSAStatus.TabIndex = 6;
+            this.lblSGSAStatus.TabIndex = 7;
             this.lblSGSAStatus.Text = "Ready.";
             //
+            // panelPSDelay
+            //
+            this.panelPSDelay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.panelPSDelay.ColumnCount = 2;
+            this.panelPSDelay.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 62F));
+            this.panelPSDelay.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38F));
+            this.panelPSDelay.Controls.Add(this.lblPSDelay, 0, 0);
+            this.panelPSDelay.Controls.Add(this.numericUpDownPSDelay, 1, 0);
+            this.panelPSDelay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelPSDelay.Location = new System.Drawing.Point(0, 150);
+            this.panelPSDelay.Margin = new System.Windows.Forms.Padding(0);
+            this.panelPSDelay.Name = "panelPSDelay";
+            this.panelPSDelay.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
+            this.panelPSDelay.RowCount = 1;
+            this.panelPSDelay.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.panelPSDelay.Size = new System.Drawing.Size(165, 40);
+            this.panelPSDelay.TabIndex = 174;
+            //
+            // lblPSDelay
+            //
+            this.lblPSDelay.AutoSize = true;
+            this.lblPSDelay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblPSDelay.Font = new System.Drawing.Font("Consolas", 8F);
+            this.lblPSDelay.ForeColor = System.Drawing.Color.White;
+            this.lblPSDelay.Location = new System.Drawing.Point(6, 4);
+            this.lblPSDelay.Name = "lblPSDelay";
+            this.lblPSDelay.Size = new System.Drawing.Size(96, 32);
+            this.lblPSDelay.TabIndex = 0;
+            this.lblPSDelay.Text = "PS Delay (ms):";
+            this.lblPSDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // numericUpDownPSDelay
+            //
+            this.numericUpDownPSDelay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.numericUpDownPSDelay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.numericUpDownPSDelay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.numericUpDownPSDelay.Font = new System.Drawing.Font("Consolas", 9F);
+            this.numericUpDownPSDelay.ForeColor = System.Drawing.Color.White;
+            this.numericUpDownPSDelay.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDownPSDelay.Location = new System.Drawing.Point(105, 4);
+            this.numericUpDownPSDelay.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.numericUpDownPSDelay.Maximum = new decimal(new int[] {
+            3000,
+            0,
+            0,
+            0});
+            this.numericUpDownPSDelay.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.numericUpDownPSDelay.Name = "numericUpDownPSDelay";
+            this.numericUpDownPSDelay.Size = new System.Drawing.Size(54, 27);
+            this.numericUpDownPSDelay.TabIndex = 1;
+            this.numericUpDownPSDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDownPSDelay.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDownPSDelay.Enter += new System.EventHandler(this.numericUpDown_Enter);
+            this.numericUpDownPSDelay.ValueChanged += new System.EventHandler(this.numericUpDownPSDelay_ValueChanged);
+            //
             // panelBackBtn
-            // 
+            //
             this.panelBackBtn.AutoSize = true;
             this.panelBackBtn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panelBackBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -867,6 +995,10 @@
             this.panelSGSASettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSGSAPower)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSGSAStep)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSGSADelay)).EndInit();
+            this.panelPSDelay.ResumeLayout(false);
+            this.panelPSDelay.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPSDelay)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -895,6 +1027,11 @@
         private System.Windows.Forms.NumericUpDown numericUpDownSGSAPower;
         private System.Windows.Forms.Label lblSGSAStep;
         private System.Windows.Forms.NumericUpDown numericUpDownSGSAStep;
+        private System.Windows.Forms.Label lblSGSADelay;
+        private System.Windows.Forms.NumericUpDown numericUpDownSGSADelay;
+        private System.Windows.Forms.TableLayoutPanel panelPSDelay;
+        private System.Windows.Forms.Label lblPSDelay;
+        private System.Windows.Forms.NumericUpDown numericUpDownPSDelay;
         private System.Windows.Forms.Button btnClearSGSAHistory;
         private System.Windows.Forms.Label lblSGSAStatus;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelBackBtn;

@@ -40,6 +40,12 @@ namespace Pegatron
         public string SN { get; set; }
         public string Firmware { get; set; }
 
+        // Diagnostic only - the raw VISA status (and exception, if any) from the last
+        // ReadScpi() call, so callers can surface *why* a query failed instead of just
+        // "failed" (ReadScpi otherwise swallows everything into a bare null return).
+        public ViStatus LastReadStatus { get; private set; } = ViStatus.VI_SUCCESS;
+        public string LastReadError { get; private set; }
+
         // public string SimSend = null;
         // public string SimRecv = null;
         //public SimulateValues Sim = new SimulateValues();
@@ -242,7 +248,7 @@ namespace Pegatron
             {
                 sRecv = ReadErrorCheck(ref bIsSucces);
 
-                if (sRecv.Contains("No error") == true)
+                if (!string.IsNullOrEmpty(sRecv) && sRecv.Contains("No error"))
                 {
                     return true;
                 }
@@ -325,7 +331,7 @@ namespace Pegatron
                     StringBuilder sCompleteBuffer = new StringBuilder();
                     StringBuilder sReadBuffer = new StringBuilder(numberofBytesToRead);
 
-                    ViStatus stauts = VIsa.viRead(m_nViSession, sReadBuffer, sReadBuffer.Length, ref nRetSize);
+                    ViStatus stauts = VIsa.viRead(m_nViSession, sReadBuffer, numberofBytesToRead, ref nRetSize);
 
                     if (stauts == ViStatus.VI_SUCCESS)
                     {
@@ -614,7 +620,9 @@ namespace Pegatron
                     StringBuilder sCompleteBuffer = new StringBuilder();
                     StringBuilder sReadBuffer = new StringBuilder(numberofBytesToRead);
 
-                    ViStatus stauts = VIsa.viRead(m_nViSession, sReadBuffer, sReadBuffer.Length, ref nRetSize);
+                    ViStatus stauts = VIsa.viRead(m_nViSession, sReadBuffer, numberofBytesToRead, ref nRetSize);
+                    LastReadStatus = stauts;
+                    LastReadError = null;
 
                     if (stauts == ViStatus.VI_SUCCESS)
                     {
@@ -650,6 +658,7 @@ namespace Pegatron
                             else { break; }
                         }
 
+                        LastReadStatus = stauts;
                         sRecvScpi = sCompleteBuffer.ToString();
 
                         //DebugEngine.LogWrite("RECV : {0} <{1}>", sRecvScpi, stauts);
@@ -665,7 +674,10 @@ namespace Pegatron
                         return null;
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    LastReadError = ex.Message;
+                }
                 finally { }
 
                 bIsSuccess = false;

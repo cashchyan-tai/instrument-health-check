@@ -47,6 +47,15 @@ namespace InstrumentHealthCheck.UI
             return ok;
         }
 
+        // Called before handing off to another instrument-control program so the switch's
+        // socket connection is released first rather than left open in this process.
+        public void DisconnectAll()
+        {
+            _switchBox?.Disconnect();
+            _switchBox = null;
+            UpdateSwitchModeUi();
+        }
+
         public PortSwitchSettings GetSettings()
         {
             return new PortSwitchSettings

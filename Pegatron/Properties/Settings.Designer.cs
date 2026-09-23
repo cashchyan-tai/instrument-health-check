@@ -46,5 +46,29 @@ namespace Pegatron.Properties {
                 this["delayStep"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public int delayCalibration {
+            get {
+                return ((int)(this["delayCalibration"]));
+            }
+            set {
+                this["delayCalibration"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int delayPowerSensorSettle {
+            get {
+                return ((int)(this["delayPowerSensorSettle"]));
+            }
+            set {
+                this["delayPowerSensorSettle"] = value;
+            }
+        }
     }
 }

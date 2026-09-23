@@ -43,6 +43,27 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <PublishUrl>Publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignManifests>false</SignManifests>
+    <GenerateManifests>true</GenerateManifests>
+    <PublisherName>Pegatron</PublisherName>
+    <ProductName>LitePoint Health Check</ProductName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -155,6 +176,9 @@
     <EmbeddedResource Include="Specifications_IQXEL_M8W.csv" />
     <EmbeddedResource Include="Specifications_RS_FSW.csv" />
     <EmbeddedResource Include="Specifications_RS_Generator.csv" />
+    <EmbeddedResource Include="Specifications_Keysight_N9020A.csv" />
+    <EmbeddedResource Include="Specifications_Keysight_E4438C.csv" />
+    <EmbeddedResource Include="Specifications_IQgig_UWB.csv" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InstrumentCore\InstrumentCore.csproj">
